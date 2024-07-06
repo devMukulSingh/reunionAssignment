@@ -1,0 +1,133 @@
+"use client";
+import { tableData } from "@/lib/tableData";
+import {
+  ColumnDef,
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+import { format } from "date-fns";
+import { Filter, SortAsc } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { BiSort } from "react-icons/bi";
+
+export type Tcolumns = {
+  id: number;
+  name: string;
+  category: string;
+  subcategory: string;
+  createdAt: string;
+  updatedAt: string;
+  price: number;
+  sale_price?: number | undefined;
+};
+
+const fallbackData = [];
+export default function Home() {
+  const [isMounted, setIsMounted] = useState(false);
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  const columns: ColumnDef<Tcolumns>[] = useMemo(
+    () => [
+      {
+        header: "ID",
+        accessorKey: "id",
+        size: 200,
+      },
+      {
+        header: "Name",
+        size: 600,
+        accessorKey: "name",
+      },
+      {
+        header: "Category",
+        size: 400,
+        accessorKey: "category",
+      },
+      {
+        header: "Subcategory",
+        size: 400,
+        accessorKey: "subcategory",
+      },
+      {
+        header: "Created At",
+        size: 300,
+        accessorKey: "createdAt",
+        cell: ({ cell, row }) => format(row.original.createdAt, "MM/dd/yyyy"),
+      },
+      {
+        header: "Updated At",
+        size: 300,
+        accessorKey: "updatedAt",
+        cell: ({ cell, row }) => format(row.original.updatedAt, "MM/dd/yyyy"),
+      },
+      {
+        header: "Price",
+        size: 200,
+        accessorKey: "price",
+      },
+      {
+        header: "Sale Price",
+        size: 200,
+        accessorKey: "sale_price",
+        cell: ({ row }) =>
+          row.original?.sale_price ? row.original?.sale_price : 0,
+      },
+    ],
+    []
+  );
+
+  const [data, setData] = useState(() => tableData);
+
+  const table = useReactTable({
+    columns,
+    data,
+    getCoreRowModel: getCoreRowModel(),
+  });
+  if (!isMounted) return null;
+  return (
+    <main className="w-full h-screen flex justify-center items-center">
+      <div className="md:w-4/5 w-full h-4/5 text-sm ">
+        <table className=" ">
+          <thead className=" border-t border-b h-10 px-10">
+            {table.getHeaderGroups().map((headerGroup) => (
+              <tr key={headerGroup.id} className="">
+                {headerGroup.headers.map((header) => (
+                  <th
+                    style={{ width: `${header.getSize()}px` }}
+                    key={header.id}
+                    className="relative"
+                  >
+                    {header.isPlaceholder ? null : (
+                      <div className="flex gap-2 items-center justify-center">
+                        {header.column.columnDef.header}
+                        <BiSort size={20} className="text-neutral-300" />
+                      </div>
+                    )}
+                  </th>
+                ))}
+              </tr>
+            ))}
+          </thead>
+          <tbody className="">
+            {table.getRowModel().rows.map((row) => (
+              <tr style={{ padding: 20 }} key={row.id} className="h-10 ">
+                {row.getVisibleCells().map((cell) => (
+                  <td
+                    style={{ textAlign: "center" }}
+                    key={cell.id}
+                    className=""
+                  >
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </main>
+  );
+}
