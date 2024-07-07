@@ -23,7 +23,7 @@ const TableComp = ({ table }: Props) => {
               >
                 {header.isPlaceholder ? null : (
                   <div className="flex gap-2 items-center justify-center">
-                    {header.column.columnDef.header}
+                    {header.column.columnDef.header?.toString()}
                     <BiSort size={20} className="text-neutral-300" />
                   </div>
                 )}

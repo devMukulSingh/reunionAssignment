@@ -1,31 +1,32 @@
 import { Input } from "@/components/ui/input";
-import { Eye, X } from "lucide-react";
-import { BiSort } from "react-icons/bi";
-import { BsStack } from "react-icons/bs";
-import { FiFilter } from "react-icons/fi";
 import { Tcolumns } from "../page";
 import { ChangeEvent, useState } from "react";
 import { tableData } from "@/lib/tableData";
+import ToggleColumnVisibility from "./ToggleColumnVisibility";
+import ToggleSort from "./ToggleSort";
+import ToggleFilters from "./ToggleFilters";
+import ToggleGrouping from "./ToggleGrouping";
+import { X } from "lucide-react";
+import { Table } from "@tanstack/react-table";
 
 type Props = {
-    data:Tcolumns[]
-    setData : (data:Tcolumns[]) => void
-}
+  table:Table<Tcolumns>
+  data: Tcolumns[];
+  setData: (data: Tcolumns[]) => void;
+};
 
-const Header = ({
-    data,
-    setData
-}:Props) => {
-    const [query, setQuery] = useState("");
-    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-        const query = e.target.value.toLocaleLowerCase();
-        setQuery(query.trimStart());
-        if(query.trimStart()!==""){
-            const filtered = tableData.filter( d => d.name.toLowerCase().includes(query));
-            setData(filtered);
-        }
-        else setData(tableData) 
-    };
+const Header = ({ data, setData,table }: Props) => {
+  const [query, setQuery] = useState("");
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const query = e.target.value.toLocaleLowerCase();
+    setQuery(query.trimStart());
+    if (query.trimStart() !== "") {
+      const filtered = tableData.filter((d) =>
+        d.name.toLowerCase().includes(query)
+      );
+      setData(filtered);
+    } else setData(tableData);
+  };
   return (
     <div className="flex justify-end h-20 ">
       <div
@@ -48,7 +49,7 @@ const Header = ({
         >
           <Input
             value={query}
-            onChange={ handleChange}
+            onChange={handleChange}
             className="
             h-10 
             focus-visible:ring-offset-0
@@ -59,17 +60,18 @@ const Header = ({
             placeholder="Search"
           />
           <X
-            onClick={() =>{ 
-                setQuery("")
-                setData(tableData)
+            onClick={() => {
+              setQuery("");
+              setData(tableData);
             }}
-            size={20} 
-            className="cursor-pointer" />
+            size={20}
+            className="cursor-pointer"
+          />
         </div>
-        <Eye size={20} />
-        <BiSort size={20} />
-        <FiFilter size={20} />
-        <BsStack size={20} />
+        <ToggleColumnVisibility table={table}/>
+        <ToggleSort table={table}/>
+        <ToggleFilters table={table}/>
+        <ToggleGrouping table={table}/>
       </div>
     </div>
   );

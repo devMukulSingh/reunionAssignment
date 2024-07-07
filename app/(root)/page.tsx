@@ -93,7 +93,7 @@ export default function Home() {
   return (
     <main className="w-full h-screen flex justify-center items-center">
       <div className="md:w-4/5 w-full h-4/5 text-sm flex flex-col gap-5">
-          <Header data={data} setData={setData}/>
+          <Header data={data} setData={setData} table={table}/>
           <TableComp table={table}/>
           <PaginationComp table={table}/>
       </div>
