@@ -1,16 +1,26 @@
 "use client";
+import { Button } from "@/components/ui/button";
 import { tableData } from "@/lib/tableData";
 import {
   ColumnDef,
   flexRender,
   getCoreRowModel,
+  getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
 import { format } from "date-fns";
 import { Filter, SortAsc } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { BiSort } from "react-icons/bi";
-
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 export type Tcolumns = {
   id: number;
   name: string;
@@ -80,16 +90,23 @@ export default function Home() {
   );
 
   const [data, setData] = useState(() => tableData);
+  const [pagination, setPagination] = useState({
+    pageIndex: 0, //initial page index
+    pageSize: 10, //default page size
+  });
 
   const table = useReactTable({
     columns,
     data,
     getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
   });
+  console.log(pagination.pageIndex);
   if (!isMounted) return null;
+  
   return (
     <main className="w-full h-screen flex justify-center items-center">
-      <div className="md:w-4/5 w-full h-4/5 text-sm ">
+      <div className="md:w-4/5 w-full h-4/5 text-sm flex flex-col gap-5">
         <table className=" ">
           <thead className=" border-t border-b h-10 px-10">
             {table.getHeaderGroups().map((headerGroup) => (
@@ -127,6 +144,62 @@ export default function Home() {
             ))}
           </tbody>
         </table>
+
+        <Pagination className=" justify-center gap-10">
+          <PaginationContent>
+            <Button
+              variant={"ghost"}
+              onClick={() => table.previousPage()}
+              disabled={!table.getCanPreviousPage()}
+            >
+              {"<"}
+            </Button>
+            {/* <div className="space-x-2"> */}
+            {[1, 2, 3, 4, 5].map((page, index) => (
+              <PaginationItem className="cursor-pointer" key={index}>
+                <PaginationLink
+                  onClick={() => table.setPageIndex(page - 1)}
+                  className={`
+                      ring-1 ring-neutral-300 
+                      ${
+                        table.getState().pagination.pageIndex === page - 1
+                          ? "bg-neutral-100"
+                          : ""
+                      }
+                      `}
+                >
+                  {page}
+                </PaginationLink>
+              </PaginationItem>
+            ))}
+            {/* </div> */}
+
+            <PaginationEllipsis />
+            <PaginationItem className="cursor-pointer">
+              <PaginationLink
+                className={`
+                      ring-1 ring-neutral-300 
+                      ${
+                        table.getState().pagination.pageIndex === pagination.pageSize-1
+                          ? "bg-neutral-100"
+                          : ""
+                      }
+                      `}
+                onClick={() => table.lastPage()}
+                isActive
+              >
+                {table.getPageCount()}
+              </PaginationLink>
+            </PaginationItem>
+            <Button
+              variant={"ghost"}
+              onClick={() => table.nextPage()}
+              disabled={!table.getCanNextPage()}
+            >
+              {">"}
+            </Button>
+          </PaginationContent>
+        </Pagination>
       </div>
     </main>
   );
