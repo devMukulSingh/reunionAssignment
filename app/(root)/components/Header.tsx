@@ -1,5 +1,5 @@
 import { Input } from "@/components/ui/input";
-import { Tcolumns } from "../page";
+import { Ttable, Tcolumns } from "../page";
 import { ChangeEvent, useState } from "react";
 import { tableData } from "@/lib/tableData";
 import ToggleColumnVisibility from "./ToggleColumnVisibility";
@@ -10,7 +10,7 @@ import { X } from "lucide-react";
 import { Table } from "@tanstack/react-table";
 
 type Props = {
-  table:Table<Tcolumns>
+  table:Ttable
   data: Tcolumns[];
   setData: (data: Tcolumns[]) => void;
 };

@@ -2,8 +2,10 @@
 import { tableData } from "@/lib/tableData";
 import {
   ColumnDef,
+  ColumnFiltersState,
   flexRender,
   getCoreRowModel,
+  getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
@@ -11,8 +13,15 @@ import {
 import { format } from "date-fns";
 import { useEffect, useMemo, useState } from "react";
 import PaginationComp from "./components/PaginationComp";
-import TableComp from "./components/TableComp";
+// import TableComp from "./components/TableComp";
 import Header from "./components/Header";
+import {
+  MaterialReactTable,
+  MRT_Table,
+  MRT_TableInstance,
+  useMaterialReactTable,
+    type MRT_ColumnDef,
+} from "material-react-table";
 
 export type Tcolumns = {
   id: number;
@@ -25,79 +34,110 @@ export type Tcolumns = {
   sale_price?: number | undefined;
 };
 
-
+export type Ttable = MRT_TableInstance<Tcolumns>
 export default function Home() {
   const [isMounted, setIsMounted] = useState(false);
   useEffect(() => {
     setIsMounted(true);
   }, []);
+  const categoryArr = tableData.map(item => item.category);
+  const categoryOptions = categoryArr.filter( (item,index) => categoryArr.indexOf(item) === index)
+    const subcategoryArr = tableData.map((item) => item.subcategory);
+    const subcategoryOptions = subcategoryArr.filter(
+      (item, index) => subcategoryArr.indexOf(item) === index
+    );
 
-  const columns: ColumnDef<Tcolumns>[] = useMemo(
+  const columns = useMemo<MRT_ColumnDef<Tcolumns>[]>(
     () => [
       {
         header: "ID",
         accessorKey: "id",
-        size: 200,
+        size: 100,
+        filterVariant: "text",
       },
       {
         header: "Name",
-        size: 600,
         accessorKey: "name",
+        size: 200,
+        filterVariant: "text",
       },
       {
         header: "Category",
-        size: 400,
         accessorKey: "category",
+        size: 150,
+        filterVariant: "multi-select",
+        filterSelectOptions: categoryOptions,
       },
       {
         header: "Subcategory",
-        size: 400,
         accessorKey: "subcategory",
+        size: 150,
+        filterVariant: "multi-select",
+        enableColumnFilter: true,
+        enableColumnFilterModes: true,
+        filterSelectOptions: subcategoryOptions,
       },
       {
         header: "Created At",
-        size: 300,
         accessorKey: "createdAt",
-        cell: ({ cell, row }) => format(row.original.createdAt, "MM/dd/yyyy"),
+        size: 100,
+        filterVariant: "date-range",
+        Cell: ({ row }) => format(row.original.createdAt, "MM/dd/yyyy"),
       },
       {
         header: "Updated At",
-        size: 300,
         accessorKey: "updatedAt",
-        cell: ({ cell, row }) => format(row.original.updatedAt, "MM/dd/yyyy"),
+        // accessorFn : (originalRow) => format(originalRow.updatedAt, "MM/dd/yyyy"),
+        size: 100,
+        filterVariant: "date-range",
+        Cell: ({ row, cell }) => format(row.original.updatedAt, "MM/dd/yyyy"),
       },
       {
         header: "Price",
-        size: 200,
         accessorKey: "price",
+        size: 100,
+        // filterFn: "between",
+        filterVariant: "range-slider",
       },
       {
         header: "Sale Price",
-        size: 200,
         accessorKey: "sale_price",
-        cell: ({ row }) =>
+        filterFn: "between",
+        size: 100,
+        filterVariant: "range-slider",
+        Cell: ({ row }) =>
           row.original?.sale_price ? row.original?.sale_price : 0,
       },
     ],
     []
   );
   const [data, setData] = useState(() => tableData);
-
-  const table = useReactTable({
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
+    []
+  );
+  const table = useMaterialReactTable({
     columns,
     data,
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
+    initialState: { showColumnFilters: true },
+    state: {
+      columnFilters,
+    },
+    filterFns: {},
+    enableSorting: true,
+    enableFilters: true,
+    enablePagination: true,
+    columnFilterDisplayMode: "custom",
+    enableFacetedValues: true,
+    enableColumnFilters:true,
   });
   if (!isMounted) return null;
   
   return (
     <main className="w-full h-screen flex justify-center items-center">
       <div className="md:w-4/5 w-full h-4/5 text-sm flex flex-col gap-5">
-          <Header data={data} setData={setData} table={table}/>
-          <TableComp table={table}/>
-          <PaginationComp table={table}/>
+        <Header data={data} setData={setData} table={table} />
+        <MRT_Table table={table} />
+        <PaginationComp table={table} />
       </div>
     </main>
   );

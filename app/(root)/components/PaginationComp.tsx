@@ -8,11 +8,11 @@ import {
   PaginationLink,
 
 } from "@/components/ui/pagination";
-import { Tcolumns } from '../page';
+import { Tcolumns, Ttable } from '../page';
 import { Table } from '@tanstack/react-table';
 
 type Props = {
-  table: Table<Tcolumns>;
+  table:Ttable
 };
 
 const PaginationComp = ({

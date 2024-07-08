@@ -1,13 +1,13 @@
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Eye } from "lucide-react";
 import React, { useState } from "react";
-import { Tcolumns } from "../page";
+import { Tcolumns, Ttable } from "../page";
 import { Table } from "@tanstack/react-table";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 type Props = {
-  table: Table<Tcolumns>;
+  table: Ttable
 };
 const ToggleColumnVisibility = ({ table }: Props) => {
   const [openSidebar, setOpenSidebar] = useState(false);
@@ -19,8 +19,8 @@ const ToggleColumnVisibility = ({ table }: Props) => {
       <SheetContent className="flex flex-col gap-8 " side={"right"}>
         <h1 className="text-xl font-medium">Show/hide Columns</h1>
         <div className="flex flex-col gap-2 overflow-auto h-[85vh] ">
-          {table.getAllLeafColumns().map((column) => (
-            <div className="flex items-center justify-between border rounded-sm py-4 px-3">
+          {table.getAllLeafColumns().map((column,index) => (
+            <div key={index} className="flex items-center justify-between border rounded-sm py-4 px-3">
               <Label htmlFor={column.id}>{column.id}</Label>
               <Switch
                 checked={column.getIsVisible()}

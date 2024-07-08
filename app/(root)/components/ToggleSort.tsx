@@ -1,12 +1,12 @@
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { BiSort } from "react-icons/bi";
-import { Tcolumns } from "../page";
+import { Tcolumns, Ttable } from "../page";
 import { Table } from "@tanstack/react-table";
 import { Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 type Props = {
-  table:Table<Tcolumns>
+  table:Ttable
 }
 
 const ToggleSort = ({
@@ -25,8 +25,9 @@ const ToggleSort = ({
               Sorting Options
             </h1>
           <div className="flex flex-col gap-2">
-            {table.getAllLeafColumns().map((column) => (
+            {table.getAllLeafColumns().map((column,index) => (
               <div 
+              key={index}
               onClick={ () => column.toggleSorting()}
               className="
               flex 

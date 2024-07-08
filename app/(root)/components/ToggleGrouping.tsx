@@ -1,7 +1,11 @@
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { BsStack } from "react-icons/bs";
+import { Ttable } from "../page";
 
-const ToggleGrouping = () => {
+type Props = {
+  table : Ttable
+}
+const ToggleGrouping = ({table}:Props) => {
   return (
     <>
       <Sheet>
