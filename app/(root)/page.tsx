@@ -66,6 +66,7 @@ export default function Home() {
         accessorKey: "category",
         size: 150,
         filterVariant: "multi-select",
+        filterFn: "arrIncludes",
         filterSelectOptions: categoryOptions,
       },
       {
@@ -78,11 +79,14 @@ export default function Home() {
         filterSelectOptions: subcategoryOptions,
       },
       {
+        accessorFn: (row) => new Date(row.createdAt),
         header: "Created At",
         accessorKey: "createdAt",
         size: 100,
+        filterFn: "",
         filterVariant: "date-range",
-        Cell: ({ row }) => format(row.original.createdAt, "MM/dd/yyyy"),
+        Cell: ({ cell }) => cell.getValue<Date>()?.toLocaleDateString(),
+        // Cell: ({ row }) => format(row.original.createdAt, "MM/dd/yyyy"),
       },
       {
         header: "Updated At",
@@ -96,13 +100,14 @@ export default function Home() {
         header: "Price",
         accessorKey: "price",
         size: 100,
+        filterFn: "inNumberRange",
         // filterFn: "between",
         filterVariant: "range-slider",
       },
       {
         header: "Sale Price",
         accessorKey: "sale_price",
-        filterFn: "between",
+        filterFn: "betweenInclusive",
         size: 100,
         filterVariant: "range-slider",
         Cell: ({ row }) =>
@@ -112,23 +117,20 @@ export default function Home() {
     []
   );
   const [data, setData] = useState(() => tableData);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
-    []
-  );
+
   const table = useMaterialReactTable({
     columns,
     data,
-    initialState: { showColumnFilters: true },
-    state: {
-      columnFilters,
-    },
-    filterFns: {},
     enableSorting: true,
-    enableFilters: true,
     enablePagination: true,
     columnFilterDisplayMode: "custom",
     enableFacetedValues: true,
-    enableColumnFilters:true,
+    muiFilterTextFieldProps: ({ column }) => ({
+      label: `Filter by ${column.columnDef.header}`,
+    }),
+    enableFilters:true,
+    // enableColumnFilters: true,
+    // enableColumnFilterModes:true,
   });
   if (!isMounted) return null;
   
