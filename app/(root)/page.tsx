@@ -105,6 +105,7 @@ export default function Home() {
         filterVariant: "range-slider",
       },
       {
+        accessorFn: (originalRow) => originalRow?.sale_price ?? 0, 
         header: "Sale Price",
         accessorKey: "sale_price",
         filterFn: "betweenInclusive",
